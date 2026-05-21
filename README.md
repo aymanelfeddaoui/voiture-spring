@@ -8,8 +8,9 @@ Projet Spring Boot + React conforme à l'atelier (Voiture / Propriétaire, REST,
 # 1. Copier les variables d'environnement
 cp .env.example .env
 
-# 2. (Optionnel) Ajouter votre clé Anthropic pour l'assistant IA
+# 2. Assistant IA : clé Anthropic avec crédits actifs
 # Éditer .env : ANTHROPIC_API_KEY=votre_cle_anthropic
+# Compte sans crédits → message « credit balance is too low » sur /api/ai/chat
 
 # 3. Lancer toute la stack
 docker compose up --build
@@ -29,8 +30,24 @@ docker compose up --build
 | `user`      | `password`   |
 | `admin`     | `admin`      |
 
-1. Ouvrir http://localhost:3000 → **Connexion**
-2. Se connecter puis accéder à **Liste Voitures**, **Ajouter**, **Assistant IA**
+1. Ouvrir http://localhost:3000 → page d'accueil (si écran gris vide : **Ctrl+F5**)
+2. Cliquer **Connexion** → `user` / `password`
+3. Accéder à **Liste Voitures**, **Ajouter**, **Assistant IA**
+
+### Pages backend
+
+| URL | Comportement |
+|-----|----------------|
+| http://localhost:8080/ | JSON d'accueil (public) |
+| http://localhost:8080/swagger-ui.html | Swagger — cliquer **Authorize** |
+| http://localhost:8080/api | HAL public en **GET** (atelier) |
+| http://localhost:8080/voitures | Public en **GET** ; POST/PUT/DELETE → JWT |
+
+**Swagger + JWT :**
+1. `POST /api/auth/login` avec `{"username":"user","password":"password"}`
+2. Copier le `token` de la réponse
+3. **Authorize** → coller le token (sans le mot « Bearer »)
+4. Tester `GET /voitures`
 
 ## Architecture
 

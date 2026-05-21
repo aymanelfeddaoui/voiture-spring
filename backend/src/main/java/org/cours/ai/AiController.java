@@ -58,11 +58,23 @@ public class AiController {
                     .content();
             return ResponseEntity.ok(Map.of("reply", reply));
         } catch (Exception e) {
-            return ResponseEntity.status(503).body(Map.of(
-                    "error", "Service IA indisponible. Vérifiez ANTHROPIC_API_KEY dans .env",
-                    "detail", e.getMessage()
-            ));
+            String detail = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+            String error = mapAiError(detail);
+            return ResponseEntity.status(503).body(Map.of("error", error, "detail", detail));
         }
+    }
+
+    private static String mapAiError(String detail) {
+        if (detail.contains("credit balance is too low")) {
+            return "Crédits Anthropic insuffisants. Rechargez votre compte sur console.anthropic.com (Plans & Billing).";
+        }
+        if (detail.contains("authentication") || detail.contains("invalid x-api-key") || detail.contains("401")) {
+            return "Clé API Anthropic invalide. Vérifiez ANTHROPIC_API_KEY dans le fichier .env puis redémarrez : docker compose up -d --build";
+        }
+        if (detail.contains("model")) {
+            return "Modèle Claude non disponible pour votre compte. Vérifiez le nom du modèle dans application.yml.";
+        }
+        return "Service IA temporairement indisponible.";
     }
 
     @GetMapping("/recommend")

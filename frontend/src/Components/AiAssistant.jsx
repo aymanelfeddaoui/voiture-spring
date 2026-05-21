@@ -8,6 +8,21 @@ export default function AiAssistant() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const recommendLocal = async () => {
+    setLoading(true);
+    setError('');
+    setReply('');
+    try {
+      const { data } = await api.get('/api/ai/recommend?budgetMax=100000');
+      const list = (data.modeles || []).join(', ') || 'aucun modèle dans ce budget';
+      setReply(`Recommandation locale (sans Claude) pour ≤ ${data.budgetMax} MAD : ${list}`);
+    } catch {
+      setError('Impossible de charger la recommandation locale.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const send = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -17,10 +32,10 @@ export default function AiAssistant() {
       const { data } = await api.post('/api/ai/chat', { message });
       setReply(data.reply);
     } catch (err) {
-      setError(
-        err.response?.data?.error ||
-          'Assistant IA indisponible. Définissez ANTHROPIC_API_KEY dans le fichier .env'
-      );
+      const data = err.response?.data;
+      const msg = data?.error || 'Assistant IA indisponible.';
+      const detail = data?.detail ? `\n\nDétail : ${data.detail}` : '';
+      setError(msg + detail);
     } finally {
       setLoading(false);
     }
@@ -41,8 +56,11 @@ export default function AiAssistant() {
                   onChange={(e) => setMessage(e.target.value)}
                   className="mb-3"
                 />
-                <Button type="submit" variant="info" disabled={loading}>
-                  {loading ? 'Réflexion...' : 'Demander'}
+                <Button type="submit" variant="info" disabled={loading} className="me-2">
+                  {loading ? 'Réflexion...' : 'Demander (Claude)'}
+                </Button>
+                <Button type="button" variant="secondary" disabled={loading} onClick={recommendLocal}>
+                  Recommandation locale
                 </Button>
               </Form>
               {error && <Alert variant="warning" className="mt-3">{error}</Alert>}

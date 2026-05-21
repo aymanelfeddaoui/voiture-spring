@@ -26,6 +26,7 @@ export default function App() {
     setToken(null);
     localStorage.removeItem('username');
     setUsername('');
+    window.location.href = '/login';
   };
 
   const marginTop = { marginTop: '20px' };
