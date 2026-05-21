@@ -1,0 +1,22 @@
+package org.cours;
+
+import org.cours.web.VoitureController;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@SpringBootTest
+@ActiveProfiles("test")
+class SpringDataRestApplicationTests {
+
+    @Autowired
+    VoitureController voitureController;
+
+    @Test
+    void contextLoads() {
+        assertThat(voitureController).isNotNull();
+    }
+}

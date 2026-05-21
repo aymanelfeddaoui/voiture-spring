@@ -1,0 +1,19 @@
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.ai.autoconfigure.anthropic.AnthropicAutoConfiguration
+  datasource:
+    url: jdbc:h2:mem:testbd;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  ai:
+    anthropic:
+      api-key: test-key
+
+app:
+  jwt:
+    secret: test-jwt-secret-for-unit-tests-only-32chars-min

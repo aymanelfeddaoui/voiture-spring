@@ -1,0 +1,22 @@
+# Secrets — ne jamais committer
+.env
+*.env.local
+
+# Build
+backend/target/
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.class
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Atelier exports (optionnel)
+*.txt

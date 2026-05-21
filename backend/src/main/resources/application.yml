@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: SpringDataRest
+  data:
+    rest:
+      base-path: /api
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    generate-ddl: true
+    show-sql: false
+  ai:
+    anthropic:
+      chat:
+        options:
+          model: claude-3-5-haiku-latest
+          temperature: 0.7
+
+server:
+  port: 8080
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:voiture-jwt-secret-change-in-production-256bits-min}
+    expiration-ms: 86400000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

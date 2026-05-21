@@ -1,0 +1,59 @@
+services:
+  db:
+    image: mariadb:11
+    container_name: voiture-db
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root}
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-compagnie}
+      MARIADB_USER: ${MARIADB_USER:-voiture}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-voiture}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: voiture-backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/${MARIADB_DATABASE:-compagnie}
+      SPRING_DATASOURCE_USERNAME: ${MARIADB_USER:-voiture}
+      SPRING_DATASOURCE_PASSWORD: ${MARIADB_PASSWORD:-voiture}
+      JWT_SECRET: ${JWT_SECRET:-voiture-jwt-secret-change-in-production-256bits-min}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 90s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8080
+    container_name: voiture-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:80"
+
+volumes:
+  mariadb_data:

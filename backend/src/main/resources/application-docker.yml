@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mariadb://db:3306/compagnie}
+    username: ${SPRING_DATASOURCE_USERNAME:voiture}
+    password: ${SPRING_DATASOURCE_PASSWORD:voiture}
+    driver-class-name: org.mariadb.jdbc.Driver
+  ai:
+    anthropic:
+      api-key: ${ANTHROPIC_API_KEY:}
